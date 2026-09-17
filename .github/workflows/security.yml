@@ -58,7 +58,7 @@ jobs:
 
       - name: Install
         run: |
-          uv venv
+          uv venv --allow-existing
           echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
           uv pip install -e ".[security]"
 
@@ -81,7 +81,7 @@ jobs:
 
       - name: Install the package and the audit tool
         run: |
-          uv venv
+          uv venv --allow-existing
           echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
           uv pip install -e ".[security]"
 
