@@ -13,8 +13,9 @@ from icd11ect_demo.pages import (
     servers_page,
 )
 
+# The theme lives in `rxconfig.py`, on `RadixThemesPlugin`: `App(theme=...)`
+# is deprecated since Reflex 0.9 and goes away in 1.0.
 app = rx.App(
-    theme=rx.theme(appearance="light", accent_color="teal", radius="medium"),
     style={"font_family": "Inter, ui-sans-serif, system-ui, sans-serif"},
 )
 
