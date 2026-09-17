@@ -1,0 +1,117 @@
+name: quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: lint and format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: uv pip install --system -e ".[dev]"
+
+      - name: Ruff lint
+        run: ruff check --output-format=github .
+
+      - name: Ruff format
+        run: ruff format --check --diff .
+
+  coverage:
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: uv pip install --system -e ".[dev]"
+
+      - name: Test with coverage
+        run: pytest --cov --cov-report=term-missing --cov-report=xml --cov-fail-under=95
+
+      - name: Upload the coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: error
+
+  package:
+    name: package metadata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: uv pip install --system -e ".[dev]"
+
+      - name: Build the distributions
+        run: python -m build
+
+      - name: Check the metadata PyPI will render
+        run: twine check --strict dist/*
+
+      - name: The wheel must ship the PEP 561 marker and the stubs
+        run: |
+          python - <<'PY'
+          import pathlib
+          import sys
+          import zipfile
+
+          wheel = next(pathlib.Path("dist").glob("*.whl"))
+          names = set(zipfile.ZipFile(wheel).namelist())
+          required = {
+              "reflex_icd11ect/py.typed",
+              "reflex_icd11ect/icd11ect.pyi",
+              "reflex_icd11ect/namespace.pyi",
+          }
+          missing = sorted(required - names)
+          if missing:
+              sys.exit(f"{wheel.name} is missing: {missing}")
+          print(f"{wheel.name} ships {sorted(required)}")
+          PY
+
+      - name: The wheel must import on a clean interpreter
+        run: |
+          uv venv /tmp/wheel-check
+          uv pip install --python /tmp/wheel-check/bin/python dist/*.whl
+          /tmp/wheel-check/bin/python -c "
+          import reflex_icd11ect
+          print('version', reflex_icd11ect.__version__)
+          assert reflex_icd11ect.icd11ect.coding_tool
+          "
