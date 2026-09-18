@@ -10,6 +10,7 @@ from __future__ import annotations
 import importlib.metadata
 from pathlib import Path
 
+import pytest
 import reflex_icd11ect
 
 DISTRIBUTION = "reflex-icd11ect"
@@ -68,3 +69,30 @@ def test_every_classifier_is_a_real_trove_classifier():
     declared = importlib.metadata.metadata(DISTRIBUTION).get_all("Classifier") or []
     assert declared, "the distribution declares no classifiers"
     assert [c for c in declared if c not in known] == []
+
+
+DEMO_ENV_EXAMPLE = ROOT / "icd11ect_demo" / ".env.example"
+
+
+@pytest.mark.skipif(
+    not DEMO_ENV_EXAMPLE.exists(), reason="the demo app is not part of the sdist"
+)
+def test_the_demo_env_template_documents_every_variable_from_env_reads():
+    """`.env.example` drifting from `from_env()` sends people down a rabbit hole."""
+    template = DEMO_ENV_EXAMPLE.read_text(encoding="utf-8")
+    for name in ("ICD_CLIENT_ID", "ICD_CLIENT_SECRET", "ICD_TOKEN_ENDPOINT"):
+        assert name in template
+
+
+@pytest.mark.skipif(
+    not DEMO_ENV_EXAMPLE.exists(), reason="the demo app is not part of the sdist"
+)
+def test_the_demo_env_template_carries_no_values():
+    """A template with a value in it is how a secret gets committed."""
+    assigned = [
+        line
+        for line in DEMO_ENV_EXAMPLE.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#") and "=" in line
+    ]
+    assert assigned, "the template assigns nothing at all"
+    assert [line for line in assigned if line.split("=", 1)[1].strip()] == []

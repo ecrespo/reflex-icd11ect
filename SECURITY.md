@@ -32,12 +32,16 @@ grant is only safe on a server:
 - **Never ship the client id and secret to the browser.** Keep them in
   environment variables read by your Reflex backend. `IcdTokenProvider.from_env()`
   is built for that; its `client_secret` is kept out of `repr()` so it does not
-  leak into a log line or a traceback.
+  leak into a log line or a traceback. The demo shows the shape:
+  `icd11ect_demo/.env.example` is the committed template, `.env` is gitignored
+  and loaded by `rxconfig.py` through Reflex's `env_file`.
 - **Only the access token reaches the frontend**, over the Reflex websocket,
   via the `token` prop. It is short-lived; refresh it from `on_token_request`.
-- **Do not commit tokens.** Reflex serialises state to `.states/*.pkl` during
-  development, so a token used in a demo lands on disk. Those files are
-  gitignored; delete them before sharing a working copy.
+- **Do not put a token in a file.** Tokens last an hour, so a token written
+  down is a credential on disk with nothing to rotate it; fetch it from the
+  client credentials instead. Reflex also serialises state to `.states/*.pkl`
+  during development, so a token handed to the component lands there. That
+  directory is gitignored and safe to delete — Reflex rebuilds it.
 - A local ICD-API deployment (Docker, Windows service, systemd) needs no
   credentials at all: set `api_secured=False` and nothing leaves your network.
 
