@@ -25,7 +25,6 @@ keywords = [
 dependencies = ["reflex>=0.9.0", "httpx>=0.27"]
 classifiers = [
     "Development Status :: 4 - Beta",
-    "Framework :: Reflex",
     "Intended Audience :: Developers",
     "Intended Audience :: Healthcare Industry",
     "Programming Language :: Python :: 3",
@@ -44,7 +43,7 @@ Issues = "https://github.com/ecrespo/reflex-icd11ect/issues"
 "ECT documentation" = "https://icd.who.int/docs/icd-api/icd11ect/"
 
 [project.optional-dependencies]
-dev = ["build", "twine", "pytest>=8", "pytest-cov", "ruff"]
+dev = ["build", "twine", "pytest>=8", "pytest-cov", "ruff", "trove-classifiers"]
 security = ["bandit[toml]", "pip-audit"]
 
 [tool.setuptools.packages.find]

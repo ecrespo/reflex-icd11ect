@@ -54,3 +54,17 @@ def test_the_ect_version_pin_is_documented():
     """The npm pin is part of the public contract, keep it in the README."""
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert reflex_icd11ect.ECT_VERSION in readme
+
+
+def test_every_classifier_is_a_real_trove_classifier():
+    """PyPI rejects the whole upload over one bad classifier.
+
+    `twine check --strict` does not catch this: it validates the README and
+    the metadata version, not the classifier list. Only the upload does, and
+    by then the tag is already pushed.
+    """
+    from trove_classifiers import classifiers as known
+
+    declared = importlib.metadata.metadata(DISTRIBUTION).get_all("Classifier") or []
+    assert declared, "the distribution declares no classifiers"
+    assert [c for c in declared if c not in known] == []
