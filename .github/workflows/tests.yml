@@ -32,7 +32,7 @@ jobs:
           # The runtime tests execute the bridge's JavaScript in node.
           node-version: "22"
 
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
 
