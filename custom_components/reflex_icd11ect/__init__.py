@@ -63,7 +63,7 @@ from reflex_icd11ect.namespace import icd11ect
 from reflex_icd11ect.token import IcdTokenError, IcdTokenProvider
 from reflex_icd11ect.types import BrowserContent, SelectedEntity
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "ALL_SETTINGS",

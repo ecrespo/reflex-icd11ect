@@ -12,7 +12,7 @@ config = rx.Config(
     env_file=".env",
     plugins=[
         # Both are enabled by default; declaring them here is what Reflex
-        # 0.9 asks for, and the theme belongs to the plugin since
+        # asks for since 0.9, and the theme belongs to the plugin since
         # `App(theme=...)` is deprecated.
         RadixThemesPlugin(
             theme=rx.theme(appearance="light", accent_color="teal", radius="medium"),

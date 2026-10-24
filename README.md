@@ -292,7 +292,7 @@ and a generated API reference.
 
 ## Requirements
 
-* Python >= 3.10, Reflex >= 0.9
+* Python >= 3.11, Reflex >= 0.10
 * An ICD-API server (local deployment or the WHO cloud API)
 
 ## Licence
