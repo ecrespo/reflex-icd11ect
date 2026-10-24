@@ -39,8 +39,13 @@ pip-audit --skip-editable
 
 ## Changing the components
 
-- The `.pyi` stubs are generated, not hand-written. Regenerate them with
-  `reflex component build` (from the repo root) and commit the result.
+- The `.pyi` stubs are generated, not hand-written. Reflex 0.10 removed the
+  `reflex component` CLI, so regenerate them with Reflex's stub generator
+  (from the repo root) and commit the result:
+
+  ```bash
+  python -m reflex_base.utils.pyi_generator custom_components/reflex_icd11ect
+  ```
 - `custom_components/reflex_icd11ect/constants.py` is the single source of
   truth for the ECT setting names. A new ECT setting means an entry there, a
   prop in `icd11ect.py`, and a line in `docs/settings.md`.
